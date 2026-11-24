@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COLORS IN ENGLISH - I4</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font arrodonida i clara per a infantil (Fredoka) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti per a celebracions visuals -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        /* Forcem MAJÚSCULES a tota l'aplicació i tipografia amigable */
+        * {
+            text-transform: uppercase !important;
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #F0F9FF;
+            background-image: radial-gradient(#BAE6FD 2px, transparent 2px);
+            background-size: 32px 32px;
+            overflow-x: hidden;
+        }
+
+        /* Animacions suaus i juganeres per a nens de 4 anys */
+        @keyframes bounce-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        @keyframes shake-gentle {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px) rotate(-3deg); }
+            75% { transform: translateX(8px) rotate(3deg); }
+        }
+
+        .animate-float {
+            animation: bounce-gentle 3s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-scale 2s ease-in-out infinite;
+        }
+
+        .animate-wiggle {
+            animation: shake-gentle 0.4s ease-in-out;
+        }
+
+        /* Efecte botó 3D tàctil molt satisfactori */
+        .btn-3d {
+            transition: all 0.1s ease;
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-3d:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        /* Onada visual quan parla la veu */
+        .speaking-ring {
+            box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Estrelles de fons del coet */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .star-bg {
+            animation: twinkle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- PANTALLA D'INICI / DESBLOQUEIG D'ÀUDIO -->
+    <div id="welcome-overlay" class="fixed inset-0 z-50 bg-sky-400 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl border-8 border-yellow-300 flex flex-col items-center">
+            <div class="text-8xl mb-4 animate-float">🎨</div>
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-600 mb-2 tracking-wide">COLORS</h1>
+            <p class="text-xl md:text-2xl font-bold text-amber-500 mb-8">APRENEM ELS COLORS EN ANGLÈS!</p>
+            
+            <button onclick="startApp()" class="btn-3d w-full bg-green-500 hover:bg-green-400 text-white text-3xl md:text-4xl font-bold py-6 px-8 rounded-3xl border-4 border-green-600 flex items-center justify-center gap-4 cursor-pointer">
+                <span>▶️</span>
+                <span>JUGAR!</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CAPÇALERA SUPERIOR -->
+    <header class="w-full p-3 md:p-4 flex items-center justify-between max-w-6xl mx-auto">
+        <!-- Botó Tornar al Menú -->
+        <button id="btn-home" onclick="goHome()" class="hidden btn-3d bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xl md:text-2xl py-3 px-5 rounded-2xl border-4 border-amber-500 flex items-center gap-2 cursor-pointer">
+            <span class="text-2xl md:text-3xl">🏠</span>
+            <span class="hidden sm:inline">INICI</span>
+        </button>
+        <div id="header-spacer" class="w-12"></div>
+
+        <!-- Títol de l'activitat actual -->
+        <div id="activity-title" class="bg-white/90 backdrop-blur px-6 py-2 rounded-full border-4 border-sky-200 shadow-sm text-xl md:text-3xl font-bold text-sky-700 text-center">
+            ELS COLORS 🎨
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Botó de prova/repetició de veu sempre accessible -->
+            <button id="global-speaker-btn" onclick="testAudio()" class="btn-3d bg-sky-400 hover:bg-sky-300 text-white border-4 border-sky-500 p-2 md:px-4 md:py-2 rounded-2xl shadow-sm flex items-center gap-1 cursor-pointer transition-all" title="REPETIR VEU">
+                <span class="text-2xl md:text-3xl">🔊</span>
+            </button>
+
+            <!-- Comptador d'Estrelles -->
+            <div class="bg-yellow-300 border-4 border-yellow-400 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2">
+                <span class="text-2xl md:text-3xl animate-pulse-slow">⭐</span>
+                <span id="star-count" class="text-2xl md:text-3xl font-bold text-amber-900">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- INDICADOR DE SUBTÍTOL / SO VISUAL (Per si el dispositiu té el volum baix o bloquejat) -->
+    <div id="speech-subtitle-bar" class="hidden max-w-3xl mx-auto mb-2 px-5 py-1.5 bg-sky-600 text-white rounded-full text-sm md:text-lg font-bold tracking-wider shadow-sm flex items-center gap-2">
+        <span>🗣️</span>
+        <span id="speech-subtitle-text">...</span>
+    </div>
+
+    <!-- CONTENIDOR PRINCIPAL DE LES ACTIVITATS -->
+    <main id="app-container" class="flex-1 w-full max-w-5xl mx-auto p-4 flex flex-col items-center justify-center">
+        
+        <!-- 1. MENÚ PRINCIPAL -->
+        <div id="view-menu" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 my-auto">
+            
+            <!-- Activitat 1: Descobrir i Escoltar -->
+            <button onclick="openActivity('explore')" class="btn-3d bg-rose-400 hover:bg-rose-300 border-8 border-rose-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">👆🔊</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">1. TOCA I ESCOLTA</span>
+                <span class="text-xs md:text-sm bg-rose-600/40 px-3 py-1 rounded-full mt-2">DESCOBRIM ELS COLORS</span>
+            </button>
+
+            <!-- Activitat 2: El Monstre Menjacolors -->
+            <button onclick="openActivity('monster')" class="btn-3d bg-emerald-400 hover:bg-emerald-300 border-8 border-emerald-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">👾🍓</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">2. EL MONSTRE GOLAFRE</span>
+                <span class="text-xs md:text-sm bg-emerald-600/40 px-3 py-1 rounded-full mt-2">JOC INFINIT</span>
+            </button>
+
+            <!-- Activitat 3: Caça de Globus -->
+            <button onclick="openActivity('balloons')" class="btn-3d bg-sky-400 hover:bg-sky-300 border-8 border-sky-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🎈💥</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">3. EXPLOXEM GLOBUS</span>
+                <span class="text-xs md:text-sm bg-sky-600/40 px-3 py-1 rounded-full mt-2">JOC INFINIT</span>
+            </button>
+
+            <!-- Activitat 4: Classifiquem per Colors -->
+            <button onclick="openActivity('sort')" class="btn-3d bg-purple-400 hover:bg-purple-300 border-8 border-purple-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🧺🧸</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">4. CADA COSA AL SEU LLOC</span>
+                <span class="text-xs md:text-sm bg-purple-600/40 px-3 py-1 rounded-full mt-2">JOC INFINIT</span>
+            </button>
+
+            <!-- Activitat 5: El Tren dels Colors (Sèries Infinites) -->
+            <button onclick="openActivity('train')" class="btn-3d bg-amber-400 hover:bg-amber-300 border-8 border-amber-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🚂🚃</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">5. EL TREN DELS COLORS</span>
+                <span class="text-xs md:text-sm bg-amber-600/40 px-3 py-1 rounded-full mt-2">SÈRIES INFINITES</span>
+            </button>
+
+            <!-- Activitat 6: La Vareta Màgica (Pintar Infinit) -->
+            <button onclick="openActivity('magic')" class="btn-3d bg-indigo-400 hover:bg-indigo-300 border-8 border-indigo-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🪄🎨</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">6. LA VARETA MÀGICA</span>
+                <span class="text-xs md:text-sm bg-indigo-600/40 px-3 py-1 rounded-full mt-2">PINTEM INFINIT</span>
+            </button>
+
+            <!-- Activitat 7: Parelles de Colors (Memòria Infinita) -->
+            <button onclick="openActivity('memory')" class="btn-3d bg-teal-400 hover:bg-teal-300 border-8 border-teal-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🃏👯</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">7. PARELLES DE COLORS</span>
+                <span class="text-xs md:text-sm bg-teal-600/40 px-3 py-1 rounded-full mt-2">MEMÒRIA INFINITA</span>
+            </button>
+
+            <!-- Activitat 8: L'Intrús (Discriminació Visual Infinita) -->
+            <button onclick="openActivity('intruder')" class="btn-3d bg-orange-400 hover:bg-orange-300 border-8 border-orange-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🕵️‍♂️🔍</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">8. BUSCA L'INTRÚS</span>
+                <span class="text-xs md:text-sm bg-orange-600/40 px-3 py-1 rounded-full mt-2">LÒGICA INFINITA</span>
+            </button>
+
+            <!-- Activitat 9: El Coet Espacial (Motors de Colors) -->
+            <button onclick="openActivity('rocket')" class="btn-3d bg-fuchsia-400 hover:bg-fuchsia-300 border-8 border-fuchsia-500 rounded-[2.5rem] p-5 md:p-6 flex flex-col items-center justify-center text-white cursor-pointer group">
+                <div class="text-6xl md:text-7xl mb-2 group-hover:scale-110 transition-transform">🚀✨</div>
+                <span class="text-xl md:text-2xl font-bold tracking-wide drop-shadow text-center">9. EL COET ESPACIAL</span>
+                <span class="text-xs md:text-sm bg-fuchsia-600/40 px-3 py-1 rounded-full mt-2">JOC INFINIT</span>
+            </button>
+
+        </div>
+
+        <!-- 2. ACTIVITAT 1: TOCA I ESCOLTA -->
+        <div id="view-explore" class="hidden w-full flex flex-col items-center">
+            <div id="explore-banner" class="mb-6 bg-white px-8 py-4 rounded-3xl border-4 border-rose-300 shadow-md flex items-center justify-between gap-6 w-full max-w-2xl min-h-[5.5rem]">
+                <div class="flex items-center gap-4">
+                    <span class="text-4xl">👇</span>
+                    <span class="text-2xl md:text-3xl font-bold text-rose-600">TOCA UN COLOR!</span>
+                </div>
+                <div id="explore-dots" class="flex gap-1.5"></div>
+            </div>
+            <div id="explore-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 3. ACTIVITAT 2: EL MONSTRE GOLAFRE -->
+        <div id="view-monster" class="hidden w-full flex flex-col items-center justify-between gap-5">
+            <!-- Barra de gana del monstre -->
+            <div class="flex items-center gap-3 bg-white px-6 py-2 rounded-full border-4 border-emerald-300 shadow-sm">
+                <span class="text-lg font-bold text-emerald-700">GANA:</span>
+                <div id="monster-hunger-bar" class="flex gap-2 text-2xl">
+                    <span>🍪</span><span>🍪</span><span>🍪</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <button onclick="repeatCurrentPrompt()" id="monster-avatar" class="bg-white rounded-full p-6 border-8 border-emerald-400 shadow-xl flex flex-col items-center justify-center cursor-pointer transition-transform active:scale-95 relative">
+                    <span id="monster-face" class="text-8xl md:text-9xl">👾</span>
+                    <div class="absolute -bottom-3 -right-3 bg-yellow-400 border-4 border-white rounded-full p-3 shadow-md">
+                        <span class="text-3xl">🔊</span>
+                    </div>
+                </button>
+                <div class="mt-4 bg-white px-6 py-3 rounded-2xl border-4 border-emerald-200 shadow-sm flex items-center gap-3">
+                    <span class="text-2xl md:text-3xl font-bold text-emerald-700" id="monster-text">ESCOLTA EL MONSTRE!</span>
+                    <button onclick="repeatCurrentPrompt()" class="bg-emerald-100 hover:bg-emerald-200 p-2 rounded-xl text-2xl cursor-pointer" title="REPETIR">🔁</button>
+                </div>
+            </div>
+
+            <div id="monster-options" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full max-w-4xl mt-2">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 4. ACTIVITAT 3: EXPLOXEM GLOBUS -->
+        <div id="view-balloons" class="hidden w-full flex flex-col items-center">
+            <div class="flex flex-wrap items-center justify-center gap-4 bg-white px-6 py-4 rounded-3xl border-4 border-sky-400 shadow-lg mb-6">
+                <button onclick="repeatCurrentPrompt()" id="balloon-speaker-btn" class="btn-3d bg-sky-400 hover:bg-sky-300 text-white p-4 rounded-2xl border-4 border-sky-500 text-4xl cursor-pointer">
+                    🔊
+                </button>
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold text-sky-500">TOCA ELS GLOBUS D'AQUEST COLOR:</span>
+                    <span id="balloon-prompt-text" class="text-3xl md:text-4xl font-bold text-slate-800">...</span>
+                </div>
+                <div id="balloon-counter" class="bg-sky-100 text-sky-800 px-4 py-2 rounded-2xl font-bold text-xl border-2 border-sky-300">
+                    🎈 0 / 2
+                </div>
+            </div>
+
+            <div id="balloons-field" class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 w-full max-w-4xl py-2">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 5. ACTIVITAT 4: CLASSIFIQUEM PER COLORS -->
+        <div id="view-sort" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex flex-col items-center">
+                <div class="flex items-center gap-3 mb-2">
+                    <p class="text-lg md:text-2xl font-bold text-purple-700">ON VA AQUEST COLOR?</p>
+                    <span id="sort-queue-badge" class="bg-purple-200 text-purple-900 px-3 py-1 rounded-full text-sm font-bold">1 / 3</span>
+                </div>
+                <button onclick="repeatCurrentPrompt()" id="sort-item-card" class="bg-white rounded-[2.5rem] p-6 md:p-8 border-8 border-purple-300 shadow-xl flex flex-col items-center cursor-pointer active:scale-95 transition-transform min-w-[220px]">
+                    <span id="sort-item-emoji" class="text-7xl md:text-8xl mb-2">🎨</span>
+                    <div class="flex items-center gap-2 bg-white/90 px-4 py-1 rounded-full shadow-sm">
+                        <span class="text-2xl">🔊</span>
+                        <span id="sort-item-name" class="text-2xl md:text-3xl font-bold text-slate-800">RED</span>
+                    </div>
+                </button>
+            </div>
+
+            <div id="sort-baskets" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full max-w-5xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 6. ACTIVITAT 5: EL TREN DELS COLORS (SÈRIES INFINITES) -->
+        <div id="view-train" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex items-center gap-3 bg-white px-6 py-3 rounded-3xl border-4 border-amber-400 shadow-md">
+                <button onclick="repeatCurrentPrompt()" class="btn-3d bg-amber-400 hover:bg-amber-300 text-white p-3 rounded-2xl border-4 border-amber-500 text-3xl cursor-pointer">🔊</button>
+                <span id="train-prompt-text" class="text-xl md:text-3xl font-bold text-amber-800">QUIN VAGÓ TOCA ARA?</span>
+            </div>
+
+            <!-- Vagons del tren -->
+            <div id="train-track" class="w-full flex flex-wrap items-center justify-center gap-2 md:gap-3 bg-white/80 p-4 md:p-6 rounded-[2.5rem] border-4 border-amber-200 shadow-inner">
+                <!-- S'omple dinàmicament -->
+            </div>
+
+            <!-- Opcions de vagons -->
+            <div id="train-options" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full max-w-4xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 7. ACTIVITAT 6: LA VARETA MÀGICA (PINTEM INFINIT) -->
+        <div id="view-magic" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-3xl border-4 border-indigo-400 shadow-md">
+                <button onclick="repeatCurrentPrompt()" class="btn-3d bg-indigo-400 hover:bg-indigo-300 text-white p-3 rounded-2xl border-4 border-indigo-500 text-3xl cursor-pointer">🔊</button>
+                <span id="magic-prompt-text" class="text-2xl md:text-3xl font-bold text-indigo-800">...</span>
+                <span id="magic-step-badge" class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-lg font-bold">1 / 3</span>
+            </div>
+
+            <!-- Llenç màgic amb 3 cristalls per pintar -->
+            <div id="magic-canvas" class="bg-slate-100 rounded-[3rem] p-6 md:p-8 border-8 border-dashed border-indigo-300 shadow-inner flex flex-wrap items-center justify-center gap-4 md:gap-8 w-full max-w-3xl transition-all duration-500">
+                <!-- S'omple dinàmicament -->
+            </div>
+
+            <!-- Pots de pintura màgica -->
+            <div id="magic-palettes" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full max-w-4xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 8. ACTIVITAT 7: PARELLES DE COLORS (MEMÒRIA INFINITA) -->
+        <div id="view-memory" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-3xl border-4 border-teal-400 shadow-md">
+                <button onclick="repeatCurrentPrompt()" class="btn-3d bg-teal-400 hover:bg-teal-300 text-white p-3 rounded-2xl border-4 border-teal-500 text-3xl cursor-pointer">🔊</button>
+                <span id="memory-prompt-text" class="text-xl md:text-3xl font-bold text-teal-800">TROBA LES PARELLES!</span>
+                <span id="memory-pairs-badge" class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-lg font-bold">0 / 3</span>
+            </div>
+
+            <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 w-full max-w-3xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 9. ACTIVITAT 8: BUSCA L'INTRÚS (LÒGICA INFINITA) -->
+        <div id="view-intruder" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-3xl border-4 border-orange-400 shadow-md">
+                <button onclick="repeatCurrentPrompt()" class="btn-3d bg-orange-400 hover:bg-orange-300 text-white p-3 rounded-2xl border-4 border-orange-500 text-3xl cursor-pointer">🔊</button>
+                <span id="intruder-prompt-text" class="text-xl md:text-3xl font-bold text-orange-800">QUIN COLOR ÉS DIFERENT?</span>
+            </div>
+
+            <div id="intruder-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 w-full max-w-4xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+        <!-- 10. ACTIVITAT 9: EL COET ESPACIAL (INFINITA) -->
+        <div id="view-rocket" class="hidden w-full flex flex-col items-center justify-between gap-6">
+            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-3xl border-4 border-fuchsia-400 shadow-md">
+                <button onclick="repeatCurrentPrompt()" class="btn-3d bg-fuchsia-400 hover:bg-fuchsia-300 text-white p-3 rounded-2xl border-4 border-fuchsia-500 text-3xl cursor-pointer">🔊</button>
+                <span id="rocket-prompt-text" class="text-2xl md:text-3xl font-bold text-fuchsia-800">...</span>
+            </div>
+
+            <!-- Coet i 4 motors de compte enrere -->
+            <div class="flex flex-col items-center bg-slate-900 text-white rounded-[3rem] p-6 md:p-8 border-8 border-fuchsia-400 shadow-2xl w-full max-w-lg relative overflow-hidden">
+                <span class="star-bg absolute top-4 left-8 text-yellow-200 text-xl">✨</span>
+                <span class="star-bg absolute top-10 right-10 text-yellow-200 text-2xl" style="animation-delay: 0.7s;">⭐</span>
+                <span class="star-bg absolute bottom-12 left-12 text-sky-200 text-lg" style="animation-delay: 1.2s;">✨</span>
+
+                <div id="rocket-ship" class="text-8xl md:text-9xl transition-transform duration-700 z-10">🚀</div>
+                <div id="rocket-lights" class="flex gap-4 mt-4 z-10">
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border-2 border-slate-500 transition-colors"></div>
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border-2 border-slate-500 transition-colors"></div>
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border-2 border-slate-500 transition-colors"></div>
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border-2 border-slate-500 transition-colors"></div>
+                </div>
+            </div>
+
+            <!-- Botons de comandament (4 colors) -->
+            <div id="rocket-buttons" class="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 w-full max-w-4xl">
+                <!-- S'omple dinàmicament -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- PEU DE PÀGINA MOLT DISCRET -->
+    <footer class="w-full p-2 text-center text-xs md:text-sm font-bold text-sky-700/60">
+        EDUCACIÓ INFANTIL (I4) • APRENENTATGE ORAL DELS COLORS EN ANGLÈS
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. DADES DEL CURRÍCULUM D'I4 (COLORS EN ANGLÈS)
+        // ==========================================
+        const COLORS_DATA = [
+            {
+                id: 'red',
+                en: 'RED',
+                ca: 'VERMELL',
+                hex: '#EF4444',
+                border: '#B91C1C',
+                textLight: true,
+                items: [
+                    { emoji: '🍎', name: 'RED APPLE' },
+                    { emoji: '🍓', name: 'RED STRAWBERRY' },
+                    { emoji: '🚗', name: 'RED CAR' },
+                    { emoji: '🐞', name: 'RED LADYBUG' },
+                    { emoji: '🍒', name: 'RED CHERRIES' },
+                    { emoji: '🍉', name: 'RED WATERMELON' }
+                ]
+            },
+            {
+                id: 'blue',
+                en: 'BLUE',
+                ca: 'BLAU',
+                hex: '#3B82F6',
+                border: '#1D4ED8',
+                textLight: true,
+                items: [
+                    { emoji: '🐳', name: 'BLUE WHALE' },
+                    { emoji: '🚙', name: 'BLUE CAR' },
+                    { emoji: '🐟', name: 'BLUE FISH' },
+                    { emoji: '🧢', name: 'BLUE CAP' },
+                    { emoji: '🦋', name: 'BLUE BUTTERFLY' },
+                    { emoji: '🐬', name: 'BLUE DOLPHIN' }
+                ]
+            },
+            {
+                id: 'yellow',
+                en: 'YELLOW',
+                ca: 'GROC',
+                hex: '#FACC15',
+                border: '#CA8A04',
+                textLight: false,
+                items: [
+                    { emoji: '🍌', name: 'YELLOW BANANA' },
+                    { emoji: '🍋', name: 'YELLOW LEMON' },
+                    { emoji: '🐥', name: 'YELLOW CHICK' },
+                    { emoji: '☀️', name: 'YELLOW SUN' },
+                    { emoji: '⭐', name: 'YELLOW STAR' },
+                    { emoji: '🧀', name: 'YELLOW CHEESE' }
+                ]
+            },
+            {
+                id: 'green',
+                en: 'GREEN',
+                ca: 'VERD',
+                hex: '#22C55E',
+                border: '#15803D',
+                textLight: true,
+                items: [
+                    { emoji: '🐸', name: 'GREEN FROG' },
+                    { emoji: '🍐', name: 'GREEN PEAR' },
+                    { emoji: '🐢', name: 'GREEN TURTLE' },
+                    { emoji: '🐊', name: 'GREEN CROCODILE' },
+                    { emoji: '🦖', name: 'GREEN DINOSAUR' },
+                    { emoji: '🍏', name: 'GREEN APPLE' }
+                ]
+            },
+            {
+                id: 'orange',
+                en: 'ORANGE',
+                ca: 'TARONJA',
+                hex: '#F97316',
+                border: '#C2410C',
+                textLight: true,
+                items: [
+                    { emoji: '🍊', name: 'ORANGE' },
+                    { emoji: '🥕', name: 'ORANGE CARROT' },
+                    { emoji: '🦊', name: 'ORANGE FOX' },
+                    { emoji: '🎃', name: 'ORANGE PUMPKIN' },
+                    { emoji: '🦁', name: 'ORANGE LION' },
+                    { emoji: '🏀', name: 'ORANGE BALL' }
+                ]
+            },
+            {
+                id: 'purple',
+                en: 'PURPLE',
+                ca: 'LILA',
+                hex: '#A855F7',
+                border: '#7E22CE',
+                textLight: true,
+                items: [
+                    { emoji: '🍇', name: 'PURPLE GRAPES' },
+                    { emoji: '🍆', name: 'PURPLE EGGPLANT' },
+                    { emoji: '🐙', name: 'PURPLE OCTOPUS' },
+                    { emoji: '☂️', name: 'PURPLE UMBRELLA' },
+                    { emoji: '👾', name: 'PURPLE MONSTER' },
+                    { emoji: '🦄', name: 'PURPLE UNICORN' }
+                ]
+            },
+            {
+                id: 'pink',
+                en: 'PINK',
+                ca: 'ROSA',
+                hex: '#F472B6',
+                border: '#BE185D',
+                textLight: true,
+                items: [
+                    { emoji: '🐷', name: 'PINK PIG' },
+                    { emoji: '🦩', name: 'PINK FLAMINGO' },
+                    { emoji: '🌸', name: 'PINK FLOWER' },
+                    { emoji: '🍩', name: 'PINK DONUT' },
+                    { emoji: '🎀', name: 'PINK RIBBON' },
+                    { emoji: '🦩', name: 'PINK BIRD' }
+                ]
+            },
+            {
+                id: 'brown',
+                en: 'BROWN',
+                ca: 'MARRÓ',
+                hex: '#92400E',
+                border: '#451A03',
+                textLight: true,
+                items: [
+                    { emoji: '🐻', name: 'BROWN BEAR' },
+                    { emoji: '🐶', name: 'BROWN DOG' },
+                    { emoji: '🍪', name: 'BROWN COOKIE' },
+                    { emoji: '🍫', name: 'BROWN CHOCOLATE' },
+                    { emoji: '🐵', name: 'BROWN MONKEY' },
+                    { emoji: '🦔', name: 'BROWN HEDGEHOG' }
+                ]
+            }
+        ];
+
+        const PRAISE_PHRASES = [
+            "GREAT JOB!",
+            "WELL DONE!",
+            "FANTASTIC!",
+            "SUPER!",
+            "AWESOME!"
+        ];
+
+        // ==========================================
+        // 2. MOTOR D'ÀUDIO HÍBRID (WEB AUDIO + SPEECH SYNTHESIS)
+        // ==========================================
+        let stars = 0;
+        let currentActivity = 'menu';
+        let currentTargetColor = null;
+        let currentPromptSpeech = '';
+        let isLocked = false;
+        let roundTimer = null;
+        let audioCtx = null;
+        let englishVoice = null;
+        let activeUtterance = null;
+        let speechWorking = null; // null = desconegut, true = funciona, false = bloquejat per iframe
+
+        // Inicialitza i desbloqueja l'AudioContext natiu
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            return audioCtx;
+        }
+
+        // Sintetitzador d'efectes musicals i cadències de veu (sempre sona, fins i tot en iframes restringits!)
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const now = ctx.currentTime;
+                const playTone = (freq, startTime, duration, waveType = 'sine', vol = 0.25) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = waveType;
+                    osc.frequency.setValueAtTime(freq, startTime);
+                    
+                    gain.gain.setValueAtTime(0.001, startTime);
+                    gain.gain.linearRampToValueAtTime(vol, startTime + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                };
+
+                if (type === 'pop') {
+                    playTone(523.25, now, 0.12, 'triangle', 0.28); // Do5
+                    playTone(659.25, now + 0.05, 0.15, 'triangle', 0.28); // Mi5
+                } else if (type === 'success') {
+                    playTone(523.25, now, 0.12, 'sine', 0.28);        // Do5
+                    playTone(659.25, now + 0.1, 0.12, 'sine', 0.28);  // Mi5
+                    playTone(783.99, now + 0.2, 0.12, 'sine', 0.28);  // Sol5
+                    playTone(1046.50, now + 0.3, 0.35, 'sine', 0.32); // Do6
+                } else if (type === 'gentle_try_again') {
+                    playTone(349.23, now, 0.14, 'triangle', 0.2); // Fa4
+                    playTone(293.66, now + 0.12, 0.2, 'triangle', 0.2); // Re4
+                } else if (type === 'voice_chime') {
+                    // Petit so de notificació vocal quan parlem
+                    playTone(587.33, now, 0.09, 'sine', 0.14);
+                    playTone(880.00, now + 0.07, 0.12, 'sine', 0.14);
+                }
+            } catch (e) {}
+        }
+
+        // Cerca la millor veu en anglès disponible al dispositiu
+        function initVoices() {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                const voices = window.speechSynthesis.getVoices();
+                if (voices && voices.length > 0) {
+                    englishVoice = voices.find(v => v.lang === 'en-GB' && (v.name.includes('Google') || v.name.includes('Female'))) ||
+                                   voices.find(v => v.lang === 'en-US' && (v.name.includes('Google') || v.name.includes('Samantha'))) ||
+                                   voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) ||
+                                   voices[0];
+                }
+            } catch (e) {}
+        }
+
+        if ('speechSynthesis' in window) {
+            initVoices();
+            window.speechSynthesis.onvoiceschanged = initVoices;
+        }
+
+        // Mostra subtítol visual i anima l'altaveu perquè el nen sàpiga que està parlant
+        function showSpeechVisual(text) {
+            const bar = document.getElementById('speech-subtitle-bar');
+            const label = document.getElementById('speech-subtitle-text');
+            const btn = document.getElementById('global-speaker-btn');
+            
+            if (bar && label) {
+                label.textContent = text;
+                bar.classList.remove('hidden');
+            }
+            if (btn) {
+                btn.classList.add('speaking-ring');
+                setTimeout(() => btn.classList.remove('speaking-ring'), 1200);
+            }
+        }
+
+        // Síntesi de veu blindada amb suport sonor i temporitzador de seguretat
+        function speakEnglish(text, onDone = null) {
+            showSpeechVisual(text);
+
+            let doneExecuted = false;
+            const finish = () => {
+                if (!doneExecuted) {
+                    doneExecuted = true;
+                    if (onDone) onDone();
+                }
+            };
+
+            // Si el navegador no té speechSynthesis o l'iframe el bloqueja, sonem un avís musical i continuem
+            if (!('speechSynthesis' in window) || speechWorking === false) {
+                playSound('voice_chime');
+                if (onDone) setTimeout(finish, 1100);
+                return;
+            }
+
+            try {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+                window.speechSynthesis.cancel();
+
+                if (!englishVoice) initVoices();
+
+                activeUtterance = new SpeechSynthesisUtterance(text.toLowerCase());
+                if (englishVoice) {
+                    activeUtterance.voice = englishVoice;
+                }
+                activeUtterance.lang = 'en-US';
+                activeUtterance.rate = 0.88;
+                activeUtterance.pitch = 1.1;
+                activeUtterance.volume = 1.0;
+
+                let speechStarted = false;
+
+                activeUtterance.onstart = () => {
+                    speechStarted = true;
+                    speechWorking = true;
+                };
+
+                activeUtterance.onend = () => {
+                    setTimeout(finish, 250);
+                };
+
+                activeUtterance.onerror = () => {
+                    playSound('voice_chime');
+                    setTimeout(finish, 250);
+                };
+
+                // Executem immediatament dins el gest de l'usuari
+                window.speechSynthesis.speak(activeUtterance);
+
+                // Comprovem si realment ha arrencat la veu al cap de 350ms; si l'entorn la bloqueja en silenci, fem sonar un avís acústic
+                setTimeout(() => {
+                    if (!speechStarted && !window.speechSynthesis.speaking) {
+                        playSound('voice_chime');
+                    }
+                }, 350);
+
+                // Temporitzador de seguretat perquè el joc MAI es quedi encallat
+                if (onDone) {
+                    const maxWait = Math.min(3000, Math.max(1300, text.length * 75));
+                    setTimeout(finish, maxWait);
+                }
+            } catch (e) {
+                playSound('voice_chime');
+                if (onDone) setTimeout(finish, 1100);
+            }
+        }
+
+        function repeatCurrentPrompt() {
+            playSound('pop');
+            if (currentPromptSpeech) {
+                speakEnglish(currentPromptSpeech);
+            } else {
+                speakEnglish("LET'S PLAY WITH COLORS!");
+            }
+        }
+
+        function testAudio() {
+            getAudioContext();
+            playSound('success');
+            if (currentPromptSpeech) {
+                speakEnglish(currentPromptSpeech);
+            } else {
+                speakEnglish("RED, BLUE, YELLOW, GREEN!");
+            }
+        }
+
+        function addStar() {
+            stars++;
+            document.getElementById('star-count').textContent = stars;
+            playSound('success');
+            
+            if (typeof confetti === 'function') {
+                try {
+                    confetti({
+                        particleCount: 45,
+                        spread: 60,
+                        origin: { y: 0.7 }
+                    });
+                } catch (e) {}
+            }
+        }
+
+        // ==========================================
+        // 3. NAVEGACIÓ ENTRE PANTALLES
+        // ==========================================
+        function startApp() {
+            getAudioContext();
+            playSound('success');
+            initVoices();
+            
+            document.getElementById('welcome-overlay').classList.add('hidden');
+            currentPromptSpeech = "HELLO! LET'S LEARN COLORS!";
+            speakEnglish(currentPromptSpeech);
+        }
+
+        function goHome() {
+            if (roundTimer) clearTimeout(roundTimer);
+            if ('speechSynthesis' in window) {
+                try { window.speechSynthesis.cancel(); } catch (e) {}
+            }
+            
+            currentActivity = 'menu';
+            isLocked = false;
+            
+            ['view-explore', 'view-monster', 'view-balloons', 'view-sort', 'view-train', 'view-magic', 'view-memory', 'view-intruder', 'view-rocket'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            document.getElementById('view-menu').classList.remove('hidden');
+            document.getElementById('btn-home').classList.add('hidden');
+            document.getElementById('header-spacer').classList.remove('hidden');
+            document.getElementById('activity-title').textContent = "ELS COLORS 🎨";
+            
+            playSound('pop');
+            currentPromptSpeech = "CHOOSE A GAME!";
+            speakEnglish(currentPromptSpeech);
+        }
+
+        function openActivity(activity) {
+            getAudioContext();
+            if (roundTimer) clearTimeout(roundTimer);
+            currentActivity = activity;
+            isLocked = false;
+            playSound('pop');
+            
+            document.getElementById('view-menu').classList.add('hidden');
+            document.getElementById('btn-home').classList.remove('hidden');
+            document.getElementById('header-spacer').classList.add('hidden');
+
+            if (activity === 'explore') {
+                document.getElementById('activity-title').textContent = "TOCA I ESCOLTA 🔊";
+                document.getElementById('view-explore').classList.remove('hidden');
+                setupExploreActivity();
+            } else if (activity === 'monster') {
+                document.getElementById('activity-title').textContent = "EL MONSTRE GOLAFRE 👾";
+                document.getElementById('view-monster').classList.remove('hidden');
+                setupMonsterRound();
+            } else if (activity === 'balloons') {
+                document.getElementById('activity-title').textContent = "EXPLOXEM GLOBUS 🎈";
+                document.getElementById('view-balloons').classList.remove('hidden');
+                setupBalloonsRound();
+            } else if (activity === 'sort') {
+                document.getElementById('activity-title').textContent = "CLASSIFIQUEM 🧺";
+                document.getElementById('view-sort').classList.remove('hidden');
+                setupSortRound();
+            } else if (activity === 'train') {
+                document.getElementById('activity-title').textContent = "EL TREN DELS COLORS 🚂";
+                document.getElementById('view-train').classList.remove('hidden');
+                setupTrainRound();
+            } else if (activity === 'magic') {
+                document.getElementById('activity-title').textContent = "LA VARETA MÀGICA 🪄";
+                document.getElementById('view-magic').classList.remove('hidden');
+                setupMagicRound();
+            } else if (activity === 'memory') {
+                document.getElementById('activity-title').textContent = "PARELLES DE COLORS 🃏";
+                document.getElementById('view-memory').classList.remove('hidden');
+                setupMemoryRound();
+            } else if (activity === 'intruder') {
+                document.getElementById('activity-title').textContent = "BUSCA L'INTRÚS 🕵️‍♂️";
+                document.getElementById('view-intruder').classList.remove('hidden');
+                setupIntruderRound();
+            } else if (activity === 'rocket') {
+                document.getElementById('activity-title').textContent = "EL COET ESPACIAL 🚀";
+                document.getElementById('view-rocket').classList.remove('hidden');
+                setupRocketRound();
+            }
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // ==========================================
+        // 4. ACTIVITAT 1: TOCA I ESCOLTA
+        // ==========================================
+        function setupExploreActivity() {
+            const grid = document.getElementById('explore-grid');
+            grid.innerHTML = '';
+            const dotsContainer = document.getElementById('explore-dots');
+            if (dotsContainer) dotsContainer.innerHTML = '';
+
+            currentPromptSpeech = "TOUCH A COLOR!";
+            speakEnglish(currentPromptSpeech);
+
+            COLORS_DATA.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d rounded-[2rem] p-5 md:p-6 h-36 md:h-44 flex flex-col items-center justify-center cursor-pointer transition-transform active:scale-95 relative overflow-hidden`;
+                btn.style.backgroundColor = color.hex;
+                btn.style.border = `6px solid ${color.border}`;
+                btn.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+
+                btn.innerHTML = `
+                    <div class="w-10 h-10 rounded-full mb-2 bg-white/30 flex items-center justify-center text-2xl">🎨</div>
+                    <span class="text-2xl md:text-3xl font-bold tracking-wider">${color.en}</span>
+                    <span class="text-xl mt-1">🔊</span>
+                `;
+
+                btn.onclick = () => {
+                    playSound('pop');
+                    btn.classList.add('scale-105');
+                    setTimeout(() => btn.classList.remove('scale-105'), 250);
+
+                    const banner = document.getElementById('explore-banner');
+                    banner.style.borderColor = color.hex;
+                    banner.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-full border-4 shadow-sm flex items-center justify-center text-2xl" style="background-color: ${color.hex}; border-color: ${color.border}">🎨</div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-3xl md:text-4xl font-bold" style="color: ${color.hex === '#FACC15' ? '#CA8A04' : color.hex}">${color.en}!</span>
+                                <span class="text-sm font-bold text-slate-400">(${color.ca})</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl animate-bounce">🔊</span>
+                        </div>
+                    `;
+
+                    currentPromptSpeech = `${color.en}!`;
+                    speakEnglish(currentPromptSpeech);
+                };
+
+                grid.appendChild(btn);
+            });
+        }
+
+        // ==========================================
+        // 5. ACTIVITAT 2: EL MONSTRE GOLAFRE (3 MOSSEGADES PER RONDA)
+        // ==========================================
+        let monsterBites = 0;
+
+        function setupMonsterRound(resetBites = true) {
+            if (currentActivity !== 'monster') return;
+            isLocked = false;
+            if (resetBites) monsterBites = 0;
+
+            const hungerBar = document.getElementById('monster-hunger-bar');
+            if (hungerBar) {
+                hungerBar.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    hungerBar.innerHTML += i < monsterBites ? '<span>😋</span>' : '<span>🍪</span>';
+                }
+            }
+            
+            const shuffled = shuffleArray(COLORS_DATA);
+            const roundColors = shuffled.slice(0, 4);
+            currentTargetColor = roundColors[Math.floor(Math.random() * roundColors.length)];
+
+            const monsterAvatar = document.getElementById('monster-avatar');
+            monsterAvatar.style.borderColor = currentTargetColor.hex;
+            document.getElementById('monster-face').textContent = '👾';
+
+            document.getElementById('monster-text').textContent = `${currentTargetColor.en}!`;
+            currentPromptSpeech = `${currentTargetColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const optionsContainer = document.getElementById('monster-options');
+            optionsContainer.innerHTML = '';
+
+            roundColors.forEach(color => {
+                const card = document.createElement('button');
+                card.className = `btn-3d rounded-[2.5rem] p-6 md:p-8 h-36 md:h-44 flex flex-col items-center justify-center cursor-pointer transition-all`;
+                card.style.backgroundColor = color.hex;
+                card.style.border = `8px solid ${color.border}`;
+                card.style.color = color.textLight ? '#FFF' : '#1E293B';
+
+                card.innerHTML = `
+                    <span class="text-3xl mb-1">🍬</span>
+                    <span class="text-2xl md:text-3xl font-bold tracking-wider">
+                        ${color.en}
+                    </span>
+                `;
+
+                card.onclick = () => {
+                    if (isLocked) return;
+
+                    if (color.id === currentTargetColor.id) {
+                        isLocked = true;
+                        monsterBites++;
+                        card.classList.add('scale-110');
+                        document.getElementById('monster-face').textContent = '😋';
+                        playSound('pop');
+
+                        if (monsterBites >= 3) {
+                            if (hungerBar) hungerBar.innerHTML = '<span>😋</span><span>😋</span><span>😋</span>';
+                            addStar();
+                            const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                            speakEnglish(`${color.en}! ${praise}`, () => {
+                                roundTimer = setTimeout(() => setupMonsterRound(true), 450);
+                            });
+                        } else {
+                            speakEnglish(`${color.en}!`, () => {
+                                roundTimer = setTimeout(() => setupMonsterRound(false), 350);
+                            });
+                        }
+                    } else {
+                        playSound('gentle_try_again');
+                        card.classList.add('animate-wiggle');
+                        setTimeout(() => card.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${currentTargetColor.en}!`);
+                    }
+                };
+
+                optionsContainer.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // 6. ACTIVITAT 3: EXPLOXEM GLOBUS (6 GLOBUS, 2 DEL COLOR OBJECTIU)
+        // ==========================================
+        let balloonsPoppedInRound = 0;
+
+        function setupBalloonsRound() {
+            if (currentActivity !== 'balloons') return;
+            isLocked = false;
+            balloonsPoppedInRound = 0;
+            
+            const shuffled = shuffleArray(COLORS_DATA);
+            currentTargetColor = shuffled[0];
+            const otherColors = shuffled.slice(1, 5);
+            
+            // 2 globus del color objectiu + 4 d'altres colors = 6 globus
+            const roundBalloons = shuffleArray([
+                currentTargetColor,
+                currentTargetColor,
+                ...otherColors
+            ]);
+
+            document.getElementById('balloon-prompt-text').textContent = `${currentTargetColor.en}!`;
+            document.getElementById('balloon-counter').textContent = `🎈 0 / 2`;
+            currentPromptSpeech = `${currentTargetColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const field = document.getElementById('balloons-field');
+            field.innerHTML = '';
+
+            roundBalloons.forEach((color, index) => {
+                const balloonWrap = document.createElement('button');
+                balloonWrap.dataset.popped = "false";
+                balloonWrap.className = `flex flex-col items-center justify-center p-2 cursor-pointer transition-transform hover:scale-105 active:scale-90 animate-float`;
+                balloonWrap.style.animationDelay = `${index * 0.25}s`;
+
+                balloonWrap.innerHTML = `
+                    <svg viewBox="0 0 120 160" class="w-32 h-44 md:w-40 md:h-52 drop-shadow-xl">
+                        <path d="M60 118 Q 55 138 65 155" stroke="#64748B" stroke-width="4" fill="none" stroke-linecap="round"/>
+                        <polygon points="54,118 66,118 60,110" fill="${color.border}"/>
+                        <ellipse cx="60" cy="60" rx="48" ry="54" fill="${color.hex}" stroke="${color.border}" stroke-width="5"/>
+                        <ellipse cx="42" cy="40" rx="10" ry="18" transform="rotate(-25 42 40)" fill="rgba(255,255,255,0.45)"/>
+                    </svg>
+                `;
+
+                balloonWrap.onclick = () => {
+                    if (isLocked || balloonWrap.dataset.popped === "true") return;
+
+                    if (color.id === currentTargetColor.id) {
+                        balloonWrap.dataset.popped = "true";
+                        balloonWrap.classList.remove('animate-float');
+                        balloonWrap.innerHTML = `<div class="text-7xl md:text-8xl py-10">💥✨</div>`;
+                        balloonsPoppedInRound++;
+                        document.getElementById('balloon-counter').textContent = `🎈 ${balloonsPoppedInRound} / 2`;
+                        playSound('pop');
+
+                        if (balloonsPoppedInRound >= 2) {
+                            isLocked = true;
+                            addStar();
+                            const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                            speakEnglish(`${color.en}! ${praise}`, () => {
+                                roundTimer = setTimeout(setupBalloonsRound, 450);
+                            });
+                        } else {
+                            speakEnglish(`${color.en}!`);
+                        }
+                    } else {
+                        playSound('gentle_try_again');
+                        balloonWrap.classList.add('animate-wiggle');
+                        setTimeout(() => balloonWrap.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${currentTargetColor.en}!`);
+                    }
+                };
+
+                field.appendChild(balloonWrap);
+            });
+        }
+
+        // ==========================================
+        // 7. ACTIVITAT 4: CLASSIFIQUEM PER COLORS (4 CISTELLES I SÈRIE DE 3 FITXES)
+        // ==========================================
+        let sortStep = 0;
+        let sortBasketColors = [];
+
+        function setupSortRound(resetStep = true) {
+            if (currentActivity !== 'sort') return;
+            isLocked = false;
+            
+            if (resetStep) {
+                sortStep = 0;
+                sortBasketColors = shuffleArray(COLORS_DATA).slice(0, 4);
+            }
+            
+            currentTargetColor = sortBasketColors[Math.floor(Math.random() * sortBasketColors.length)];
+
+            const badge = document.getElementById('sort-queue-badge');
+            if (badge) badge.textContent = `${sortStep + 1} / 3`;
+
+            const itemCard = document.getElementById('sort-item-card');
+            itemCard.style.borderColor = currentTargetColor.border;
+            itemCard.style.backgroundColor = currentTargetColor.hex;
+            document.getElementById('sort-item-emoji').textContent = '🎨';
+            document.getElementById('sort-item-name').textContent = currentTargetColor.en;
+
+            currentPromptSpeech = `${currentTargetColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const basketsContainer = document.getElementById('sort-baskets');
+            basketsContainer.innerHTML = '';
+
+            sortBasketColors.forEach(color => {
+                const basket = document.createElement('button');
+                basket.className = `btn-3d rounded-[2rem] p-5 md:p-7 flex flex-col items-center justify-center cursor-pointer transition-transform`;
+                basket.style.backgroundColor = color.hex;
+                basket.style.border = `8px solid ${color.border}`;
+                basket.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+
+                basket.innerHTML = `
+                    <span class="text-5xl md:text-6xl mb-2">🧺</span>
+                    <span class="text-xl md:text-2xl font-bold tracking-wide">${color.en}</span>
+                `;
+
+                basket.onclick = () => {
+                    if (isLocked) return;
+
+                    if (color.id === currentTargetColor.id) {
+                        isLocked = true;
+                        sortStep++;
+                        basket.innerHTML = `
+                            <span class="text-5xl md:text-6xl mb-2">⭐</span>
+                            <span class="text-xl md:text-2xl font-bold tracking-wide">${color.en}!</span>
+                        `;
+                        playSound('pop');
+
+                        if (sortStep >= 3) {
+                            addStar();
+                            const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                            speakEnglish(`${color.en}! ${praise}`, () => {
+                                roundTimer = setTimeout(() => setupSortRound(true), 450);
+                            });
+                        } else {
+                            speakEnglish(`${color.en}!`, () => {
+                                roundTimer = setTimeout(() => setupSortRound(false), 350);
+                            });
+                        }
+                    } else {
+                        playSound('gentle_try_again');
+                        basket.classList.add('animate-wiggle');
+                        setTimeout(() => basket.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${currentTargetColor.en}!`);
+                    }
+                };
+
+                basketsContainer.appendChild(basket);
+            });
+        }
+
+        // ==========================================
+        // 8. ACTIVITAT 5: EL TREN DELS COLORS (SÈRIES MÉS RIQUES I 4 OPCIONS)
+        // ==========================================
+        function setupTrainRound() {
+            if (currentActivity !== 'train') return;
+            isLocked = false;
+
+            const shuffled = shuffleArray(COLORS_DATA);
+            const colorA = shuffled[0];
+            const colorB = shuffled[1];
+            const colorC = shuffled[2];
+            const distractor = shuffled[3];
+
+            // Sèries variades: ABAB, AABB, o ABCAB -> C
+            const patterns = [
+                { seq: [colorA, colorB, colorA, colorB], target: colorA },
+                { seq: [colorA, colorA, colorB, colorB], target: colorA },
+                { seq: [colorA, colorB, colorC, colorA, colorB], target: colorC }
+            ];
+            const chosen = patterns[Math.floor(Math.random() * patterns.length)];
+            const sequence = chosen.seq;
+            currentTargetColor = chosen.target;
+
+            const track = document.getElementById('train-track');
+            track.innerHTML = `<div class="text-5xl md:text-6xl mr-1">🚂</div>`;
+
+            // Dibuixem els vagons de mostra
+            sequence.forEach(col => {
+                const wagon = document.createElement('div');
+                wagon.className = `w-20 h-20 md:w-24 md:h-24 p-2 rounded-2xl flex items-center justify-center font-bold text-xs md:text-base shadow-md`;
+                wagon.style.backgroundColor = col.hex;
+                wagon.style.border = `5px solid ${col.border}`;
+                wagon.style.color = col.textLight ? '#FFFFFF' : '#1E293B';
+                wagon.textContent = col.en;
+                track.appendChild(wagon);
+            });
+
+            // Vagó buit final (?)
+            const missingWagon = document.createElement('div');
+            missingWagon.id = 'train-missing-slot';
+            missingWagon.className = `w-20 h-20 md:w-24 md:h-24 p-2 rounded-2xl border-4 border-dashed border-amber-500 bg-amber-50 flex items-center justify-center text-3xl md:text-4xl font-bold text-amber-500 animate-pulse`;
+            missingWagon.textContent = '?';
+            track.appendChild(missingWagon);
+
+            const seqNames = sequence.map(c => c.en).join(', ');
+            document.getElementById('train-prompt-text').textContent = `${seqNames}, ...?`;
+            currentPromptSpeech = `${seqNames}!`;
+            speakEnglish(currentPromptSpeech);
+
+            // 4 opcions per completar
+            const options = shuffleArray([colorA, colorB, colorC, distractor]);
+            const optionsContainer = document.getElementById('train-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d rounded-3xl p-5 md:p-6 flex flex-col items-center justify-center cursor-pointer transition-transform`;
+                btn.style.backgroundColor = color.hex;
+                btn.style.border = `6px solid ${color.border}`;
+                btn.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+                btn.innerHTML = `
+                    <span class="text-4xl md:text-5xl mb-1">🚃</span>
+                    <span class="text-xl md:text-2xl font-bold">${color.en}</span>
+                `;
+
+                btn.onclick = () => {
+                    if (isLocked) return;
+                    if (color.id === currentTargetColor.id) {
+                        isLocked = true;
+                        const slot = document.getElementById('train-missing-slot');
+                        slot.className = `w-20 h-20 md:w-24 md:h-24 p-2 rounded-2xl flex items-center justify-center font-bold text-xs md:text-base shadow-md scale-110 transition-transform`;
+                        slot.style.backgroundColor = color.hex;
+                        slot.style.border = `5px solid ${color.border}`;
+                        slot.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+                        slot.textContent = color.en;
+
+                        addStar();
+                        const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                        speakEnglish(`${color.en}! ${praise}`, () => {
+                            roundTimer = setTimeout(setupTrainRound, 500);
+                        });
+                    } else {
+                        playSound('gentle_try_again');
+                        btn.classList.add('animate-wiggle');
+                        setTimeout(() => btn.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${seqNames}!`);
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // ==========================================
+        // 9. ACTIVITAT 6: LA VARETA MÀGICA (PINTEM 3 CRISTALLS MÀGICS)
+        // ==========================================
+        let magicStep = 0;
+        let magicTargetSequence = [];
+
+        function setupMagicRound() {
+            if (currentActivity !== 'magic') return;
+            isLocked = false;
+            magicStep = 0;
+
+            const shuffled = shuffleArray(COLORS_DATA);
+            const roundColors = shuffled.slice(0, 4);
+            magicTargetSequence = shuffleArray([...roundColors]).slice(0, 3);
+            currentTargetColor = magicTargetSequence[0];
+
+            const canvas = document.getElementById('magic-canvas');
+            canvas.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const gem = document.createElement('div');
+                gem.id = `magic-gem-${i}`;
+                gem.className = 'w-28 h-32 md:w-36 md:h-40 rounded-[2rem] bg-white border-4 border-dashed border-indigo-300 flex flex-col items-center justify-center shadow-sm transition-all duration-500';
+                gem.innerHTML = `
+                    <span class="text-5xl md:text-6xl opacity-30">💎</span>
+                    <span class="mt-2 text-lg md:text-xl font-bold text-slate-400">???</span>
+                `;
+                canvas.appendChild(gem);
+            }
+
+            document.getElementById('magic-step-badge').textContent = `1 / 3`;
+            document.getElementById('magic-prompt-text').textContent = `${currentTargetColor.en}!`;
+            currentPromptSpeech = `${currentTargetColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const palettes = document.getElementById('magic-palettes');
+            palettes.innerHTML = '';
+
+            roundColors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d rounded-[2rem] p-5 md:p-6 flex flex-col items-center justify-center cursor-pointer transition-transform`;
+                btn.style.backgroundColor = color.hex;
+                btn.style.border = `6px solid ${color.border}`;
+                btn.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+                btn.innerHTML = `
+                    <span class="text-4xl md:text-5xl mb-1">🪄</span>
+                    <span class="text-xl md:text-2xl font-bold">${color.en}</span>
+                `;
+
+                btn.onclick = () => {
+                    if (isLocked) return;
+                    if (color.id === currentTargetColor.id) {
+                        const gem = document.getElementById(`magic-gem-${magicStep}`);
+                        gem.style.backgroundColor = color.hex;
+                        gem.style.borderColor = color.border;
+                        gem.style.borderStyle = 'solid';
+                        gem.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+                        gem.classList.add('scale-105', 'shadow-lg');
+                        gem.innerHTML = `
+                            <span class="text-5xl md:text-6xl">✨</span>
+                            <span class="mt-2 text-lg md:text-xl font-bold">${color.en}</span>
+                        `;
+
+                        magicStep++;
+                        playSound('pop');
+
+                        if (magicStep < 3) {
+                            isLocked = true;
+                            currentTargetColor = magicTargetSequence[magicStep];
+                            document.getElementById('magic-step-badge').textContent = `${magicStep + 1} / 3`;
+                            document.getElementById('magic-prompt-text').textContent = `${currentTargetColor.en}!`;
+                            currentPromptSpeech = `${currentTargetColor.en}!`;
+                            speakEnglish(`${color.en}! ${currentTargetColor.en}!`);
+                            setTimeout(() => { isLocked = false; }, 450);
+                        } else {
+                            isLocked = true;
+                            addStar();
+                            const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                            speakEnglish(`${color.en}! ${praise}`, () => {
+                                roundTimer = setTimeout(setupMagicRound, 550);
+                            });
+                        }
+                    } else {
+                        playSound('gentle_try_again');
+                        btn.classList.add('animate-wiggle');
+                        setTimeout(() => btn.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${currentTargetColor.en}!`);
+                    }
+                };
+                palettes.appendChild(btn);
+            });
+        }
+
+        // ==========================================
+        // 10. ACTIVITAT 7: PARELLES DE COLORS (3 PARELLES = 6 CARTES)
+        // ==========================================
+        let memoryFlipped = [];
+        let memoryMatchedCount = 0;
+
+        function setupMemoryRound() {
+            if (currentActivity !== 'memory') return;
+            isLocked = false;
+            memoryFlipped = [];
+            memoryMatchedCount = 0;
+
+            const shuffled = shuffleArray(COLORS_DATA);
+            const pairColors = shuffled.slice(0, 3); // 3 parelles = 6 cartes
+            const deck = shuffleArray([...pairColors, ...pairColors]);
+
+            document.getElementById('memory-prompt-text').textContent = "FIND THE PAIRS!";
+            document.getElementById('memory-pairs-badge').textContent = "0 / 3";
+            currentPromptSpeech = "FIND THE COLOR PAIRS!";
+            speakEnglish(currentPromptSpeech);
+
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+
+            deck.forEach((color) => {
+                const card = document.createElement('button');
+                card.dataset.colorId = color.id;
+                card.dataset.matched = "false";
+                card.className = "btn-3d bg-teal-500 border-8 border-teal-700 rounded-[2.5rem] h-36 md:h-44 flex flex-col items-center justify-center cursor-pointer transition-all";
+                card.innerHTML = `<span class="text-5xl md:text-6xl text-white">❓</span>`;
+
+                card.onclick = () => {
+                    if (isLocked || card.dataset.matched === "true" || memoryFlipped.includes(card)) return;
+
+                    // Girem la carta
+                    playSound('pop');
+                    card.style.backgroundColor = color.hex;
+                    card.style.borderColor = color.border;
+                    card.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+                    card.innerHTML = `
+                        <span class="text-2xl md:text-3xl font-bold">${color.en}</span>
+                    `;
+                    speakEnglish(color.en);
+
+                    memoryFlipped.push(card);
+
+                    if (memoryFlipped.length === 2) {
+                        isLocked = true;
+                        const [c1, c2] = memoryFlipped;
+                        if (c1.dataset.colorId === c2.dataset.colorId) {
+                            c1.dataset.matched = "true";
+                            c2.dataset.matched = "true";
+                            c1.classList.add('scale-105');
+                            c2.classList.add('scale-105');
+                            memoryMatchedCount++;
+                            document.getElementById('memory-pairs-badge').textContent = `${memoryMatchedCount} / 3`;
+                            memoryFlipped = [];
+                            isLocked = false;
+
+                            if (memoryMatchedCount === 3) {
+                                addStar();
+                                const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                                speakEnglish(`${color.en}! ${praise}`, () => {
+                                    roundTimer = setTimeout(setupMemoryRound, 550);
+                                });
+                            }
+                        } else {
+                            setTimeout(() => {
+                                playSound('gentle_try_again');
+                                [c1, c2].forEach(c => {
+                                    c.style.backgroundColor = '';
+                                    c.style.borderColor = '';
+                                    c.style.color = '';
+                                    c.className = "btn-3d bg-teal-500 border-8 border-teal-700 rounded-[2.5rem] h-36 md:h-44 flex flex-col items-center justify-center cursor-pointer transition-all";
+                                    c.innerHTML = `<span class="text-5xl md:text-6xl text-white">❓</span>`;
+                                });
+                                memoryFlipped = [];
+                                isLocked = false;
+                            }, 1100);
+                        }
+                    }
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // 11. ACTIVITAT 8: BUSCA L'INTRÚS (6 FITXES: 5 IGUALS I 1 DIFERENT)
+        // ==========================================
+        function setupIntruderRound() {
+            if (currentActivity !== 'intruder') return;
+            isLocked = false;
+
+            const shuffled = shuffleArray(COLORS_DATA);
+            const mainColor = shuffled[0];
+            const intruderColor = shuffled[1];
+            currentTargetColor = intruderColor;
+
+            // 5 fitxes del color principal i 1 de l'intrús
+            const mainItems = Array.from({ length: 5 }, () => ({
+                color: mainColor,
+                isIntruder: false
+            }));
+            const intruderItem = {
+                color: intruderColor,
+                isIntruder: true
+            };
+
+            const cardsData = shuffleArray([...mainItems, intruderItem]);
+
+            document.getElementById('intruder-prompt-text').textContent = "QUIN COLOR ÉS DIFERENT?";
+            currentPromptSpeech = `${intruderColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const grid = document.getElementById('intruder-grid');
+            grid.innerHTML = '';
+
+            cardsData.forEach(entry => {
+                const btn = document.createElement('button');
+                btn.className = "btn-3d rounded-[2.5rem] p-6 h-36 md:h-44 flex flex-col items-center justify-center cursor-pointer transition-transform";
+                btn.style.backgroundColor = entry.color.hex;
+                btn.style.border = `8px solid ${entry.color.border}`;
+                btn.style.color = entry.color.textLight ? '#FFFFFF' : '#1E293B';
+
+                btn.innerHTML = `
+                    <span class="text-2xl md:text-3xl font-bold">${entry.color.en}</span>
+                `;
+
+                btn.onclick = () => {
+                    if (isLocked) return;
+                    if (entry.isIntruder) {
+                        isLocked = true;
+                        btn.classList.add('scale-110');
+                        addStar();
+                        const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                        speakEnglish(`${entry.color.en}! ${praise}`, () => {
+                            roundTimer = setTimeout(setupIntruderRound, 500);
+                        });
+                    } else {
+                        playSound('gentle_try_again');
+                        btn.classList.add('animate-wiggle');
+                        setTimeout(() => btn.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${entry.color.en}. ${intruderColor.en}!`);
+                    }
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        // ==========================================
+        // 12. ACTIVITAT 9: EL COET ESPACIAL (4 MOTORS I 4 BOTONS)
+        // ==========================================
+        let rocketStep = 0;
+        let rocketSequence = [];
+
+        function setupRocketRound() {
+            if (currentActivity !== 'rocket') return;
+            isLocked = false;
+            rocketStep = 0;
+
+            const shuffled = shuffleArray(COLORS_DATA);
+            const roundColors = shuffled.slice(0, 4);
+            rocketSequence = shuffleArray([...roundColors]);
+            currentTargetColor = rocketSequence[0];
+
+            // Reiniciem el coet i els 4 llums
+            const ship = document.getElementById('rocket-ship');
+            ship.style.transform = 'translateY(0) scale(1)';
+            ship.textContent = '🚀';
+
+            const lights = document.getElementById('rocket-lights').children;
+            for (let i = 0; i < lights.length; i++) {
+                lights[i].style.backgroundColor = '#334155';
+                lights[i].style.borderColor = '#64748B';
+            }
+
+            document.getElementById('rocket-prompt-text').textContent = `${currentTargetColor.en}!`;
+            currentPromptSpeech = `${currentTargetColor.en}!`;
+            speakEnglish(currentPromptSpeech);
+
+            const btnContainer = document.getElementById('rocket-buttons');
+            btnContainer.innerHTML = '';
+
+            roundColors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = "btn-3d rounded-full h-24 md:h-32 flex flex-col items-center justify-center cursor-pointer transition-transform";
+                btn.style.backgroundColor = color.hex;
+                btn.style.border = `8px solid ${color.border}`;
+                btn.style.color = color.textLight ? '#FFFFFF' : '#1E293B';
+
+                btn.innerHTML = `
+                    <span class="text-xl md:text-2xl font-bold">${color.en}</span>
+                `;
+
+                btn.onclick = () => {
+                    if (isLocked) return;
+                    if (color.id === currentTargetColor.id) {
+                        playSound('pop');
+                        const lights = document.getElementById('rocket-lights').children;
+                        lights[rocketStep].style.backgroundColor = color.hex;
+                        lights[rocketStep].style.borderColor = '#FFFFFF';
+                        rocketStep++;
+
+                        if (rocketStep < 4) {
+                            isLocked = true;
+                            currentTargetColor = rocketSequence[rocketStep];
+                            document.getElementById('rocket-prompt-text').textContent = `${currentTargetColor.en}!`;
+                            currentPromptSpeech = `${currentTargetColor.en}!`;
+                            speakEnglish(`${color.en}! ${currentTargetColor.en}!`);
+                            setTimeout(() => { isLocked = false; }, 450);
+                        } else {
+                            // Enlairament!
+                            isLocked = true;
+                            ship.textContent = '🚀🔥';
+                            ship.style.transform = 'translateY(-150px) scale(1.25)';
+                            addStar();
+                            const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+                            speakEnglish(`${color.en}! ${praise}`, () => {
+                                roundTimer = setTimeout(setupRocketRound, 600);
+                            });
+                        }
+                    } else {
+                        playSound('gentle_try_again');
+                        btn.classList.add('animate-wiggle');
+                        setTimeout(() => btn.classList.remove('animate-wiggle'), 400);
+                        speakEnglish(`${color.en}. ${currentTargetColor.en}!`);
+                    }
+                };
+                btnContainer.appendChild(btn);
+            });
+        }
+    </script>
+</body>
+</html>
